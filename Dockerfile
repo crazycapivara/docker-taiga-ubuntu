@@ -31,10 +31,15 @@ ENV TAIGA_HOSTNAME=localhost:8000
 
 COPY ./conf/docker.py /$TAIGA_BACK_HOME/settings/local.py
 
+# Install and setup nginx
+RUN apt-get install -y --no-install-recommends nginx
+
+COPY ./conf/nginx/default /etc/nginx/sites-enabled/default
+
 EXPOSE 8000
 
 COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["bash"]
-#CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+#CMD ["bash"]
+CMD ["python3", "manage.py", "runserver", "127.0.0.1:8001"]
 

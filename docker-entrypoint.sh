@@ -10,5 +10,8 @@ if [ ! -d "$TAIGA_BACK_HOME/static" ]; then
 	python3 manage.py collectstatic --noinput
 fi
 
+# Start nginx
+nginx
+
 exec "$@"
 
