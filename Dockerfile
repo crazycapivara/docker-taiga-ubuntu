@@ -2,9 +2,6 @@ FROM ubuntu:16.04
 
 LABEL maintainer "Stefan Kuethe <crazycapivara@gmail.com>"
 
-ENV BRANCH stable
-ENV TAIGA_BACK taiga-back
-
 # Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
 	build-essential binutils-doc autoconf flex bison libjpeg-dev \
@@ -18,18 +15,21 @@ RUN apt-get install -y --no-install-recommends \
 
 # RUN rm -rf /var/lib/apt/lists/*
 
-#ENV REQUIREMENTS requirements.txt
-ENV REQUIREMENTS requirements-devel.txt
+ENV BRANCH=stable \
+	TAIGA_BACK_HOME=/taiga-back \
+	REQUIREMENTS=requirements-devel.txt
 
 # Get taiga and install requirements
-RUN git clone https://github.com/taigaio/taiga-back.git --branch $BRANCH $TAIGA_BACK
+RUN git clone https://github.com/taigaio/taiga-back.git --branch $BRANCH $TAIGA_BACK_HOME
 
-WORKDIR $TAIGA_BACK
+WORKDIR $TAIGA_BACK_HOME
 	
-RUN pip3 install --no-cache-dir -r $REQUIREMENTS \
-	&& cp settings/local.py.example settings/local.py
+RUN pip3 install --no-cache-dir -r $REQUIREMENTS
+#	&& cp settings/local.py.example settings/local.py
 
-COPY ./conf/local.py /$TAIGA_BACK/settings/local.py
+ENV TAIGA_HOSTNAME=localhost:8000
+
+COPY ./conf/docker.py /$TAIGA_BACK_HOME/settings/local.py
 
 EXPOSE 8000
 
